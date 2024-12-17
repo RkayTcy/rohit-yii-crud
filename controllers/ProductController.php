@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Category;
 use app\models\Product;
 use app\models\searchModels\ProductSearch;
+use app\models\SubCategory;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -40,10 +42,14 @@ class ProductController extends Controller
     {
         $searchModel = new ProductSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $catData = $this->getCategoryData();
+        $subCatData = $this->getSubCategoryData();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'catData' => $catData,
+            'subCatData' => $subCatData
         ]);
     }
 
@@ -68,17 +74,21 @@ class ProductController extends Controller
     public function actionCreate()
     {
         $model = new Product();
-
+        $catData = $this->getCategoryData();
+        $subCatData = $this->getSubCategoryData();
+        
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
-            $model->loadDefaultValues();
+            $model->created_at = date('Y-m-d H:i:s');
         }
 
         return $this->render('create', [
             'model' => $model,
+            'catData' => $catData,
+            'subCatData' => $subCatData
         ]);
     }
 
@@ -92,6 +102,8 @@ class ProductController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $catData = $this->getCategoryData();
+        $subCatData = $this->getSubCategoryData();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -99,6 +111,8 @@ class ProductController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'catData' => $catData,
+            'subCatData' => $subCatData
         ]);
     }
 
@@ -130,5 +144,16 @@ class ProductController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function getCategoryData(){
+        $catModel = Category::find()->select(['id','title'])->asArray()->all();
+        return array_column($catModel,'title','id');
+    }
+
+    protected function getSubCategoryData(){
+        $subCatModel = SubCategory::find()->select(['id','sub_title'])
+        ->asArray()->all();
+        return array_column($subCatModel,'sub_title','id');
     }
 }

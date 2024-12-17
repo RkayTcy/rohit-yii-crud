@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Category;
 use app\models\SubCategory;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -33,8 +34,18 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'sub_title',
-            'cat_id',
+            'sub_title',            
+            [
+                'attribute' => 'cat_id',
+                'value' => function ($model) {
+                    return ucfirst($model->cat->title) ?? null;
+                },
+                'filter' => Html::activeDropDownList($searchModel,'cat_id',$catData,[
+                    'class' => 'form-control',
+                    'prompt'=>'Select Category'
+                ]),
+                'label' => 'Category Title'
+            ],
             'created_at',
             [
                 'class' => ActionColumn::className(),

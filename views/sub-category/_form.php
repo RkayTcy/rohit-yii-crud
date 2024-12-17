@@ -14,7 +14,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'sub_title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'cat_id')->textInput() ?>
+    <?= $form->field($model, 'cat_id')->dropDownList($catData,[
+        'prompt'=>'Select Category'
+    ]) ?>
 
     <?= $form->field($model, 'created_at')->textInput() ?>
 

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Category;
 use app\models\SubCategory;
 use app\models\searchModels\SubCategorySearch;
 use yii\web\Controller;
@@ -40,10 +41,12 @@ class SubCategoryController extends Controller
     {
         $searchModel = new SubCategorySearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $catData = $this->getCategoryData();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'catData' => $catData
         ]);
     }
 
@@ -68,17 +71,18 @@ class SubCategoryController extends Controller
     public function actionCreate()
     {
         $model = new SubCategory();
-
+        $catData = $this->getCategoryData();
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
-            $model->loadDefaultValues();
+            $model->created_at = date('Y-m-d H:i:s');
         }
 
         return $this->render('create', [
             'model' => $model,
+            'catData' => $catData
         ]);
     }
 
@@ -93,12 +97,16 @@ class SubCategoryController extends Controller
     {
         $model = $this->findModel($id);
 
+        $catData = $this->getCategoryData();
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            $model->created_at = date('Y-m-d H:i:s');
         }
 
         return $this->render('update', [
             'model' => $model,
+            'catData' => $catData
         ]);
     }
 
@@ -130,5 +138,10 @@ class SubCategoryController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function getCategoryData(){
+        $catModel = Category::find()->select(['id','title'])->asArray()->all();
+        return array_column($catModel,'title','id');
     }
 }

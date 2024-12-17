@@ -14,11 +14,17 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'prod_title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'cat_id')->textInput() ?>
+    <?= $form->field($model, 'cat_id')->dropDownList($catData, [
+        'class' => 'form-control',
+        'prompt' => 'Select Category'
+    ]) ?>
 
     <?= $form->field($model, 'prod_name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'subcat_id')->textInput() ?>
+    <?= $form->field($model, 'subcat_id')->dropDownList($subCatData, [
+        'class' => 'form-control',
+        'prompt' => 'Select Sub Category'
+    ]) ?>
 
     <?= $form->field($model, 'created_at')->textInput() ?>
 

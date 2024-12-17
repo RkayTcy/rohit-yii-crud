@@ -6,6 +6,7 @@ use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+
 /** @var yii\web\View $this */
 /** @var app\models\searchModels\ProductSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
@@ -24,7 +25,8 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php Pjax::begin(); ?>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -34,15 +36,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'prod_title',
-            'cat_id',
+            [
+                'attribute' => 'cat_id',
+                'value' => function ($model) {
+                    return ucfirst($model->cat->title) ?? null;
+                },
+                'label' => 'Category Title',
+                'filter' => Html::activeDropDownList($searchModel, 'cat_id', $catData, [
+                    'class' => 'form-control',
+                    'prompt' => 'Select Category'
+                ])
+            ],
             'prod_name',
-            'subcat_id',
+            [
+                'attribute' => 'subcat_id',
+                'value' => function ($model) {
+                    return ucfirst($model->subcat->sub_title) ?? null;
+                },
+                'label' => 'SubCategory Title',
+                'filter' => Html::activeDropDownList($searchModel, 'subcat_id', $subCatData, [
+                    'class' => 'form-control',
+                    'prompt' => 'Select Category'
+                ])
+            ],
             //'created_at',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Product $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+                }
             ],
         ],
     ]); ?>

@@ -11,6 +11,8 @@ use app\models\Category;
  */
 class CategorySearch extends Category
 {
+    public $subcat_id;
+    public $prod_id;
     /**
      * {@inheritdoc}
      */
@@ -18,7 +20,7 @@ class CategorySearch extends Category
     {
         return [
             [['id'], 'integer'],
-            [['title', 'created_at'], 'safe'],
+            [['title', 'subcat_id', 'prod_id', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,12 +42,32 @@ class CategorySearch extends Category
      */
     public function search($params)
     {
-        $query = Category::find();
+        $query = Category::find()->joinWith(['subCategories', 'products']);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'attributes' => [
+                    'id', // Default column from the main table
+                    'title', // Main table column
+                    'created_at', // Main table column
+                    // Custom sorting for subCategories table
+                    'subcat_id' => [
+                        'asc' => ['sub_category.id' => SORT_ASC],
+                        'desc' => ['sub_category.id' => SORT_DESC],
+                        'label' => 'SubCategory Title',
+                    ],
+
+                    // Custom sorting for products table
+                    'prod_id' => [
+                        'asc' => ['product.id' => SORT_ASC],
+                        'desc' => ['product.id' => SORT_DESC],
+                        'label' => 'Product Name',
+                    ],
+                ]
+            ]
         ]);
 
         $this->load($params);
@@ -63,6 +85,8 @@ class CategorySearch extends Category
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title]);
+        $query->andFilterWhere(['like', 'sub_category.id', $this->subcat_id]);
+        $query->andFilterWhere(['like', 'product.id', $this->prod_id]);
 
         return $dataProvider;
     }

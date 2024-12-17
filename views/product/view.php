@@ -31,9 +31,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'prod_title',
-            'cat_id',
+            [
+                'label' => 'Category Title',
+                'value' => $model->cat->title ?? null
+            ],
             'prod_name',
-            'subcat_id',
+            [
+                'label' => 'Sub Category Title',
+                'value' => $model->subcat->sub_title ?? null
+            ],
             'created_at',
         ],
     ]) ?>

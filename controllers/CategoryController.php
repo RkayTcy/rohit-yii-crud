@@ -3,7 +3,9 @@
 namespace app\controllers;
 
 use app\models\Category;
+use app\models\Product;
 use app\models\searchModels\CategorySearch;
+use app\models\SubCategory;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -40,10 +42,14 @@ class CategoryController extends Controller
     {
         $searchModel = new CategorySearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $subCatdata = $this->getSubCategoryData();
+        $productdata = $this->getSubCategoryData();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'subCatdata' => $subCatdata,
+            'productdata' => $productdata
         ]);
     }
 
@@ -74,7 +80,7 @@ class CategoryController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
-            $model->loadDefaultValues();
+            $model->created_at = date('Y-m-d H:i:s');
         }
 
         return $this->render('create', [
@@ -95,6 +101,8 @@ class CategoryController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            $model->created_at = date('Y-m-d H:i:s');
         }
 
         return $this->render('update', [
@@ -130,5 +138,17 @@ class CategoryController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function getSubCategoryData(){
+        $subCatModel = SubCategory::find()->select(['id','sub_title'])
+        ->asArray()->all();
+        return array_column($subCatModel,'sub_title','id');
+    }
+
+    protected function getProductData(){
+        $subCatModel = Product::find()->select(['id','prod_name'])
+        ->asArray()->all();
+        return array_column($subCatModel,'prod_name','id');
     }
 }

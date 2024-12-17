@@ -16,6 +16,9 @@ $config = [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '8VZQqqat0pNOY5DaUrLGCeWgaMs8y8q1',
         ],
+        'session' => [
+            'savePath' => "/var/www/custom_sessions",
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -43,14 +46,13 @@ $config = [
             ],
         ],
         'db' => $db,
-        
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
+            'rules' => [],
         ],
-        
+
     ],
     'params' => $params,
 ];
